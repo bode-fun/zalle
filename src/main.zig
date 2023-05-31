@@ -1,25 +1,21 @@
-const std = @import("std");
 const clap = @import("clap");
+const std = @import("std");
 
 pub fn main() !void {
-    // Prints to stderr (it's a shortcut based on `std.io.getStdErr()`)
-    std.debug.print("All your {s} are belong to us.\n", .{"codebase"});
+    // TODO: Zig port of https://git.bode.fun/walle
+    const params = comptime clap.parseParamsComptime(
+        \\-h, --help     Display this help and exit.
+        \\-v, --version  Output version information and exit.
+        \\
+    );
 
-    // stdout is for the actual output of your application, for example if you
-    // are implementing gzip, then only the compressed bytes should be sent to
-    // stdout, not any debugging messages.
-    const stdout_file = std.io.getStdOut().writer();
-    var bw = std.io.bufferedWriter(stdout_file);
-    const stdout = bw.writer();
+    var res = try clap.parse(clap.Help, &params, clap.parsers.default, .{});
+    defer res.deinit();
 
-    try stdout.print("Run `zig build test` to run the tests.\n", .{});
-
-    try bw.flush(); // don't forget to flush!
-}
-
-test "simple test" {
-    var list = std.ArrayList(i32).init(std.testing.allocator);
-    defer list.deinit(); // try commenting this out and see if zig detects the memory leak!
-    try list.append(42);
-    try std.testing.expectEqual(@as(i32, 42), list.pop());
+    // `clap.help` is a function that can print a simple help message. It can print any `Param`
+    // where `Id` has a `describtion` and `value` method (`Param(Help)` is one such parameter).
+    // The last argument contains options as to how `help` should print those parameters. Using
+    // `.{}` means the default options.
+    if (res.args.help != 0)
+        return clap.help(std.io.getStdErr().writer(), clap.Help, &params, .{});
 }
