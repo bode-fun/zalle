@@ -2,6 +2,15 @@
     .name = "zalle",
     .version = "0.0.1",
 
+    // Good references:
+    //   - https://devlog.hexops.com/2023/zig-0-11-breaking-build-changes/
+    //   - https://kassane.github.io/2023/05/03/zig-pkg/
+    // 
+    // When adding a new dependency, first run without the hash,
+    // to get the hash from the compile error.
+    //
+    // URL for Github:  https://github.com/<user>/<repo>/archive/<tag or commit-hash>.tar.gz
+    // Hash:            multihash (sha256 (0x12), 32 byte (0x20))
     .dependencies = .{
         .clap = .{
             .url = "https://github.com/Hejsil/zig-clap/archive/05a50fe7fe833059db8550c34bc69fedd8bb0af8.tar.gz",
